@@ -3680,6 +3680,11 @@ coa@^2.0.2:
     chalk "^2.4.1"
     q "^1.1.2"
 
+cohere-ai@^3.2.0:
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/cohere-ai/-/cohere-ai-3.2.0.tgz#1890644b95a7eab036e1d10bae39c53e7e994e59"
+  integrity sha512-YXNjE9UO64PKBostXquiw/EFtGjMEu5UW4qDedjNSKLKKjxyMHItuC/dCIF6byK5e6OMCB9Sq6r87AOwull1UQ==
+
 collect-v8-coverage@^1.0.0:
   version "1.0.1"
   resolved "https://registry.npmjs.org/collect-v8-coverage/-/collect-v8-coverage-1.0.1.tgz"

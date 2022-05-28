@@ -6,7 +6,7 @@ let isRecording = false
 let socket
 let recorder
 
-const run = async (handleTranscribe) => {
+const run = async (handleTranscribe, handleCohere) => {
   if (isRecording) {
     if (socket) {
       socket.send(JSON.stringify({ terminate_session: true }))
@@ -46,9 +46,8 @@ const run = async (handleTranscribe) => {
         }
       }
       console.log(msg)
-      //***THE TRANSCRIPTION NEEDS TO BE DYNAMIC SO WE CAN SHOW THE TEXT***//
       handleTranscribe(msg)
-      //this dont work rn ^^^
+      //handleCohere(msg)
     }
 
     socket.onerror = (event) => {
@@ -103,14 +102,24 @@ const run = async (handleTranscribe) => {
 
 const Assembly = () => {
   const [transcription, setTranscription] = useState()
+  const [data, setData] = useState(null);
+  const API_URL = 'http://localhost:8000';
+
+  const handleCohere = (msg) => {
+    setData(null);
+    fetch(`${API_URL}/api?input=${[msg]}`)
+      .then((res) => res.json())
+      .then((data) => console.log(data))
+  };
   const handleTranscribe = (text) => {
     setTranscription(text)
   }
 
   return (
     <div>
-      <button onClick={() => run(handleTranscribe)}>Record</button>
+      <button onClick={() => run(handleTranscribe, handleCohere)}>Record</button>
       {transcription}
+      {data}
     </div>
   )
 }
