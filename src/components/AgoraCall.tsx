@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import AgoraRTC, { IAgoraRTCRemoteUser } from 'agora-rtc-sdk-ng'
 import useAgora from '../functions/useAgora'
 import MediaPlayer from './MediaPlayer'
@@ -6,6 +6,7 @@ import { appId } from '../constants/agoraConstants'
 import { Button, Pane } from 'evergreen-ui'
 import { useNavigate, useParams } from 'react-router-dom'
 import { toString } from 'lodash'
+import { UserContext } from '../context'
 
 const client = AgoraRTC.createClient({ codec: 'h264', mode: 'rtc' })
 
@@ -17,6 +18,9 @@ export default function AgoraCall(props: {
   handleRemoteParticipantIds: (participants: string[]) => void
 }) {
   const { participantId, handleRemoteParticipantIds } = props
+
+  const user = useContext(UserContext)
+
   const { id } = useParams()
   const navigate = useNavigate()
 
@@ -40,13 +44,13 @@ export default function AgoraCall(props: {
     handleRemoteParticipantIds(remoteUserIds)
   }, [remoteUsers])
 
-  useEffect(() => {
-    console.log('client id', client.uid)
-  }, [client.uid])
-
   const handleLeave = () => {
     leave()
-    navigate('/')
+    if (user) {
+      navigate('/host')
+    } else {
+      navigate('/')
+    }
   }
   return (
     <Pane display="flex" flexDirection="column" width="80%">

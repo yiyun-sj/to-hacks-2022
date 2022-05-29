@@ -1,5 +1,5 @@
 import React, { ChangeEvent, useState } from 'react'
-import { Button, Pane, TextInput } from 'evergreen-ui'
+import { Button, Heading, Pane, Text, TextInput } from 'evergreen-ui'
 import { Divider } from 'antd'
 import { Link } from 'react-router-dom'
 
@@ -13,8 +13,20 @@ const Home = () => {
       minHeight="100vh"
       display="flex"
       alignItems="center"
-      justifyContent="center"
+      justifyContent="space-between"
+      flexDirection="column"
     >
+      <Pane
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
+        flexDirection="column"
+        gap={16}
+        margin={32}
+      >
+        <Heading size={900}>Vidlytics</Heading>
+        <Text>Your go-to video call sentiment analysis app</Text>
+      </Pane>
       <Pane display="flex" alignItems="center" justifyContent="center">
         <Button is={Link} to="/host">
           Host a meeting
@@ -31,6 +43,7 @@ const Home = () => {
           Join
         </Button>
       </Pane>
+      <Pane padding={48}></Pane>
     </Pane>
   )
 }
