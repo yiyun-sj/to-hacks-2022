@@ -8,7 +8,7 @@ app.use(express.json())
 app.use(cors())
 cohere.init('7gKelMMiKVbIB8i3ybSUClxc4oWFe5XYHIVaCHhY')
 
-const PORT = process.env.PORT || 5000
+const PORT = process.env.PORT || 8000
 
 app.get('/', async (req, res) => {
   try {
