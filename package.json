@@ -33,6 +33,7 @@
   },
   "scripts": {
     "start": "node ./backend/server.js",
+    "heroku-postbuild": "yarn install && yarn run build",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
