@@ -2,13 +2,15 @@ import { Pane } from 'evergreen-ui'
 import { set } from 'lodash'
 import React, { useEffect, useState } from 'react'
 import RecordRTC, { StereoAudioRecorder } from 'recordrtc'
+import { includes } from 'lodash'
+import { UpdateCohere } from '../functions/firebase'
 
 let transcription = 'none'
 let isRecording = false
 let socket
 let recorder
 
-const run = async (handleTranscribe, handleCohere) => {
+const run = async (handleCohere) => {
   if (isRecording) {
     if (socket) {
       socket.send(JSON.stringify({ terminate_session: true }))
@@ -37,19 +39,21 @@ const run = async (handleTranscribe, handleCohere) => {
 
     const texts = {}
     socket.onmessage = (message) => {
-      let msg = ''
-      const res = JSON.parse(message.data)
-      texts[res.audio_start] = res.text
-      const keys = Object.keys(texts)
-      keys.sort((a, b) => a - b)
-      for (const key of keys) {
-        if (texts[key]) {
-          msg += ` ${texts[key]}`
+      try {
+        let msg = ''
+        const res = JSON.parse(message.data)
+        texts[res.audio_start] = res.text
+        const keys = Object.keys(texts)
+        keys.sort((a, b) => a - b)
+        for (const key of keys) {
+          if (texts[key]) {
+            msg += ` ${texts[key]}`
+          }
         }
+        handleCohere(msg)
+      } catch (err) {
+        console.error('error', err)
       }
-      console.log(msg)
-      handleTranscribe(msg.split('.'))
-      handleCohere(msg)
     }
 
     socket.onerror = (event) => {
@@ -102,33 +106,34 @@ const run = async (handleTranscribe, handleCohere) => {
   isRecording = !isRecording
 }
 
-const Assembly = () => {
-  const [transcription, setTranscription] = useState([])
-  const [data, setData] = useState(null);
+const Assembly = (props) => {
+  const { meetingId, participantId } = props
+  const [cohereData, setCohereData] = useState(null)
 
   const handleCohere = (msg) => {
-    setData(null)
-    fetch('http://localhost:8000/cohere', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ sentences: msg.split('.') })
-    })
-      .then((res) => res.json())
-      .then((data) => console.log(data))
-  };
-  const handleTranscribe = (sentences) => {
-    for (let i = 0; i < sentences.length - 1; i++) {
-      if (!transcription.includes(sentences[i])) {
-        console.log('works2' + sentences[i])
-        setTranscription([...transcription, sentences[i]])
-      }
+    try {
+      fetch('http://localhost:8000/cohere', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sentences: msg.split('.') }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data && data != cohereData) setCohereData(data)
+        })
+    } catch (err) {
+      console.error('error', err)
     }
-    setTranscription(sentences)
-    console.log(transcription)
   }
 
   useEffect(() => {
-    run(handleTranscribe, handleCohere)
+    if (cohereData) {
+      UpdateCohere({ meetingId, participantId, cohere: cohereData })
+    }
+  }, [cohereData])
+
+  useEffect(() => {
+    run(handleCohere)
   }, [])
 
   return <Pane></Pane>

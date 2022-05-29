@@ -80,7 +80,7 @@ export default function AgoraCall(props: {
         ))}
       </Pane>
       <Button onClick={() => handleLeave()}>Leave</Button>
-      <Assembly />
+      <Assembly meetingId={id || ''} participantId={participantId} />
     </Pane>
   )
 }

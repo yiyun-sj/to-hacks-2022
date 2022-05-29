@@ -142,3 +142,38 @@ export async function getMeetingsById(props: { id: string }) {
   )
   return meetings
 }
+
+export async function UpdateCohere(props: {
+  meetingId: string
+  participantId: string
+  cohere: any
+}) {
+  const { meetingId, participantId, cohere } = props
+  const cohereData = cohere.map((data: any) => {
+    return { input: data.input, prediction: data.prediction }
+  })
+  await updateDoc(
+    doc(db(), 'meetings', meetingId, 'participants', participantId),
+    {
+      cohere: cohereData,
+    }
+  )
+}
+
+export async function ListenToParticipantCohere(props: {
+  meetingId: string
+  participantId: string
+  cb: Dispatch<SetStateAction<any>>
+}) {
+  const { meetingId, participantId, cb } = props
+  onSnapshot(
+    doc(db(), 'meetings', meetingId, 'participants', participantId),
+    (doc) => {
+      if (doc.exists()) {
+        const cohere = doc.data().cohere
+        const currentMood = cohere[-1].prediction
+        cb(currentMood)
+      }
+    }
+  )
+}
