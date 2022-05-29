@@ -43,7 +43,6 @@ const Home = () => {
         <Button is={Link} to={`/meeting/${meetingLink}`}>
           Join
         </Button>
-        <Assembly />
       </Pane>
       <Pane padding={48}></Pane>
     </Pane>
