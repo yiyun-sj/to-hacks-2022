@@ -1,5 +1,6 @@
+import { Pane } from 'evergreen-ui'
 import { set } from 'lodash'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import RecordRTC, { StereoAudioRecorder } from 'recordrtc'
 
 let transcription = 'none'
@@ -103,29 +104,27 @@ const run = async (handleTranscribe, handleCohere) => {
 
 const Assembly = () => {
   const [transcription, setTranscription] = useState()
-  const [data, setData] = useState(null);
+  const [data, setData] = useState(null)
 
   const handleCohere = (msg) => {
-    setData(null);
+    setData(null)
     fetch('http://localhost:8000/cohere', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ sentences: [msg] })
+      body: JSON.stringify({ sentences: msg.split('.') }),
     })
       .then((res) => res.json())
       .then((data) => console.log(data))
-  };
+  }
   const handleTranscribe = (text) => {
     setTranscription(text)
   }
 
-  return (
-    <div>
-      <button onClick={() => run(handleTranscribe, handleCohere)}>Record</button>
-      {transcription}
-      {data}
-    </div>
-  )
+  useEffect(() => {
+    run(handleTranscribe, handleCohere)
+  }, [])
+
+  return <Pane></Pane>
 }
 
 export default Assembly

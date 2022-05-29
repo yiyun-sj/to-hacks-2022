@@ -7,6 +7,7 @@ import { Button, Pane } from 'evergreen-ui'
 import { useNavigate, useParams } from 'react-router-dom'
 import { toString } from 'lodash'
 import { UserContext } from '../context'
+import Assembly from './Assembly'
 
 const client = AgoraRTC.createClient({ codec: 'h264', mode: 'rtc' })
 
@@ -79,6 +80,7 @@ export default function AgoraCall(props: {
         ))}
       </Pane>
       <Button onClick={() => handleLeave()}>Leave</Button>
+      <Assembly />
     </Pane>
   )
 }
