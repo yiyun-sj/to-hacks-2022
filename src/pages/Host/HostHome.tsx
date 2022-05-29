@@ -5,11 +5,13 @@ import {
   ConfirmIcon,
   DeleteIcon,
   DesktopIcon,
+  Dialog,
   Heading,
   HeadsetIcon,
   IconButton,
   Pane,
   SideSheet,
+  Spinner,
   Tab,
   Table,
   Tablist,
@@ -25,9 +27,11 @@ import { UserContext } from '../../context'
 import {
   createMeeting,
   getMeetingsById,
+  getParticipantById,
+  getParticipantsByMeeting,
   updateUsername,
 } from '../../functions/firebase'
-import { toString } from 'lodash'
+import { isFunction, toString } from 'lodash'
 
 function StartMeeting() {
   const user = useContext(UserContext)
@@ -133,12 +137,29 @@ function MeetingAnalytics() {
 
   const [meetings, setMeetings] = useState<any>([])
   const [selectedMeeting, setSelectedMeeting] = useState<any>(false)
+  const [participants, setParticipants] = useState<any>()
+  const [selectedParticipant, setSelectedParticipant] = useState<any>(false)
 
   useEffect(() => {
     if (user?.id) {
-      getMeetingsById({ id: user?.id }).then(setMeetings)
+      const unsubscribe = getMeetingsById({ id: user?.id, cb: setMeetings })
+      return () => isFunction(unsubscribe) && unsubscribe()
     }
   }, [user?.id])
+
+  useEffect(() => {
+    if (selectedMeeting) {
+      getParticipantsByMeeting({ meetingId: selectedMeeting?.id }).then(
+        setParticipants
+      )
+    }
+  }, [selectedMeeting])
+
+  useEffect(() => {
+    if (selectedParticipant) {
+      console.log(selectedParticipant)
+    }
+  }, [selectedParticipant])
 
   return (
     <Pane>
@@ -165,7 +186,7 @@ function MeetingAnalytics() {
       <SideSheet
         onCloseComplete={() => setSelectedMeeting(false)}
         width="50vw"
-        isShown={selectedMeeting}
+        isShown={!!selectedMeeting}
         preventBodyScrolling
       >
         <Pane display="flex" flexDirection="column" gap={16}>
@@ -178,9 +199,53 @@ function MeetingAnalytics() {
           >
             <Heading>Analytics for {selectedMeeting.title}</Heading>
             <Divider />
+            <Table width="100%">
+              <Table.Head>
+                <Table.TextHeaderCell>Username</Table.TextHeaderCell>
+              </Table.Head>
+              <Table.Body>
+                {participants?.map((participant: any) => {
+                  return (
+                    <Table.Row
+                      key={participant.id}
+                      isSelectable
+                      onSelect={() => {
+                        setSelectedParticipant(participant)
+                      }}
+                    >
+                      <Table.TextCell>{participant.username}</Table.TextCell>
+                    </Table.Row>
+                  )
+                })}
+              </Table.Body>
+            </Table>
           </Pane>
         </Pane>
       </SideSheet>
+      <Dialog
+        isShown={!!selectedParticipant}
+        onCloseComplete={() => setSelectedParticipant(false)}
+        title={`${selectedParticipant.username}'s Logs`}
+        hasFooter={false}
+        width="80vw"
+      >
+        <Table width="100%">
+          <Table.Head>
+            <Table.TextHeaderCell>Input</Table.TextHeaderCell>
+            <Table.TextHeaderCell>Prediction</Table.TextHeaderCell>
+          </Table.Head>
+          <Table.Body>
+            {selectedParticipant?.cohere?.map((cohere: any, index: number) => {
+              return (
+                <Table.Row key={selectedParticipant.index}>
+                  <Table.TextCell>{cohere.input}</Table.TextCell>
+                  <Table.TextCell>{cohere.prediction}</Table.TextCell>
+                </Table.Row>
+              )
+            })}
+          </Table.Body>
+        </Table>
+      </Dialog>
     </Pane>
   )
 }

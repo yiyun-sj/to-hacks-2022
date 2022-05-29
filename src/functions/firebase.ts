@@ -13,6 +13,7 @@ import {
   getDocs,
   Timestamp,
 } from 'firebase/firestore'
+import { last } from 'lodash'
 import { Dispatch, SetStateAction } from 'react'
 
 const db = () => getFirestore()
@@ -123,24 +124,29 @@ export async function getParticipantById(props: {
   participantId?: string
 }) {
   const { meetingId, participantId } = props
+  if (!meetingId || !participantId) return
   const participantDoc = await getDoc(
     doc(db(), 'meetings', meetingId, 'participants', participantId || 'none')
   )
   return participantDoc.data()
 }
 
-export async function getMeetingsById(props: { id: string }) {
-  const { id } = props
+export async function getMeetingsById(props: {
+  id: string
+  cb: Dispatch<SetStateAction<any>>
+}) {
+  const { id, cb } = props
   const meetingDocs = query(
     collection(db(), 'meetings'),
     where('host', '==', id)
   )
-  const meetingsSnapshot = await getDocs(meetingDocs)
-  const meetings: any = []
-  meetingsSnapshot.forEach((doc) =>
-    meetings.push({ id: doc.id, ...doc.data() })
-  )
-  return meetings
+  onSnapshot(meetingDocs, (meetingsSnapshot) => {
+    const meetings: any = []
+    meetingsSnapshot.forEach((doc) =>
+      meetings.push({ id: doc.id, ...doc.data() })
+    )
+    cb(meetings)
+  })
 }
 
 export async function UpdateCohere(props: {
@@ -166,14 +172,29 @@ export async function ListenToParticipantCohere(props: {
   cb: Dispatch<SetStateAction<any>>
 }) {
   const { meetingId, participantId, cb } = props
+  console.log(meetingId, participantId)
   onSnapshot(
     doc(db(), 'meetings', meetingId, 'participants', participantId),
     (doc) => {
       if (doc.exists()) {
-        const cohere = doc.data().cohere
-        const currentMood = cohere[-1].prediction
+        const cohere = doc.data()?.cohere
+        const lastCohere: any = last(cohere)
+        const currentMood = lastCohere?.prediction
         cb(currentMood)
       }
     }
   )
+}
+
+export async function getParticipantsByMeeting(props: { meetingId: string }) {
+  const { meetingId } = props
+
+  const participantsSnapshot = await getDocs(
+    collection(db(), 'meetings', meetingId, 'participants')
+  )
+  const participants: any = []
+  participantsSnapshot.forEach((doc) =>
+    participants.push({ id: doc.id, ...doc.data() })
+  )
+  return participants
 }
