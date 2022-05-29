@@ -8,6 +8,8 @@ app.use(express.json())
 app.use(cors())
 cohere.init('7gKelMMiKVbIB8i3ybSUClxc4oWFe5XYHIVaCHhY')
 
+const PORT = process.env.PORT || 8000
+
 app.get('/', async (req, res) => {
   try {
     const response = await axios.post(
@@ -70,7 +72,6 @@ app.post('/cohere', async (req, res) => {
   res.json(response.body.classifications)
 })
 
-app.set('port', 8000)
-const server = app.listen(app.get('port'), () => {
-  console.log(`Server is running on port ${server.address().port}`)
+app.listen(PORT, () => {
+  console.log(`server started on port ${PORT}`)
 })
