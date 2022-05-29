@@ -138,6 +138,9 @@ const Assembly = (props) => {
 
   useEffect(() => {
     run(handleCohere)
+    return () => {
+      run(handleCohere)
+    }
   }, [])
 
   return <Pane></Pane>

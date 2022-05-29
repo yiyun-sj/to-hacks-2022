@@ -6,7 +6,7 @@ import {
 } from 'agora-rtc-sdk-ng'
 import { Pane, Strong, Text } from 'evergreen-ui'
 import { isFunction } from 'lodash'
-import React, { useRef, useEffect, useState } from 'react'
+import React, { useRef, useEffect, useState, useContext } from 'react'
 import {
   getParticipantById,
   ListenToParticipantCohere,
@@ -14,6 +14,7 @@ import {
 import happy from '../assets/happy.gif'
 import sad from '../assets/sad.gif'
 import neutral from '../assets/neutral.gif'
+import { AudioContext, UserContext, VideoContext } from '../context'
 
 export interface VideoPlayerProps {
   uid: string
@@ -28,6 +29,10 @@ const MediaPlayer = (props: VideoPlayerProps) => {
   const [participant, setParticipant] = useState<any>()
   const [participantMood, setParticipantMood] = useState<any>()
   const [emoji, setEmoji] = useState<string>(happy)
+
+  const audio = useContext(AudioContext)
+  const video = useContext(VideoContext)
+  const user = useContext(UserContext)
 
   const container = useRef<HTMLDivElement>(null)
 
@@ -62,6 +67,24 @@ const MediaPlayer = (props: VideoPlayerProps) => {
       audioTrack?.stop()
     }
   }, [audioTrack])
+
+  useEffect(() => {
+    if (container.current && videoTrack && user?.id === uid && audio) {
+      videoTrack?.play(container.current)
+    }
+    if (container.current && videoTrack && user?.id === uid && !audio) {
+      videoTrack?.stop()
+    }
+  }, [videoTrack, audio, user, uid, container])
+
+  useEffect(() => {
+    if (audioTrack && user?.id === uid && audio) {
+      audioTrack?.play()
+    }
+    if (audioTrack && user?.id === uid && !audio) {
+      audioTrack?.stop()
+    }
+  }, [audioTrack, audio, user, uid])
 
   useEffect(() => {
     switch (participantMood) {
