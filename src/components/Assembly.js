@@ -1,3 +1,4 @@
+import { set } from 'lodash'
 import React, { useState } from 'react'
 import RecordRTC, { StereoAudioRecorder } from 'recordrtc'
 
@@ -47,7 +48,7 @@ const run = async (handleTranscribe, handleCohere) => {
       }
       console.log(msg)
       handleTranscribe(msg)
-      //handleCohere(msg)
+      handleCohere(msg)
     }
 
     socket.onerror = (event) => {
@@ -103,11 +104,14 @@ const run = async (handleTranscribe, handleCohere) => {
 const Assembly = () => {
   const [transcription, setTranscription] = useState()
   const [data, setData] = useState(null);
-  const API_URL = 'http://localhost:8000';
 
   const handleCohere = (msg) => {
     setData(null);
-    fetch(`${API_URL}/api?input=${[msg]}`)
+    fetch('http://localhost:8000/cohere', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sentences: [msg] })
+    })
       .then((res) => res.json())
       .then((data) => console.log(data))
   };

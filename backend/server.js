@@ -25,27 +25,13 @@ app.get('/', async (req, res) => {
   }
 })
 
-app.get('/api', async (req, res) => {
-  const response = await cohere.classify(
-    (model = 'medium'),
-    (taskDescription =
-      'The following is a sentiment classifier regarding customer orders for an e-commerce company'),
-    (outputIndicator = 'this is:'),
-    (inputs = ['This item was broken when it arrived']),
-    (examples = [
-      Example('The order came 5 days early', 'positive'),
-      Example('The item exceeded my expectations', 'positive'),
-      Example('I ordered more for my friends', 'positive'),
-      Example('I would buy this again', 'positive'),
-      Example('I would recommend this to others', 'positive'),
-      Example('The package was damaged', 'negative'),
-      Example('The order is 5 days late', 'negative'),
-      Example('The order was incorrect', 'negative'),
-      Example('I want to return my item', 'negative'),
-      Example("The item's material feels low quality", 'negative'),
-    ])
-  )
-  res.json(response.body)
+app.post('/cohere', async (req, res) => {
+  const response = await cohere.classify('medium', {
+    inputs: req.body.sentences,
+    examples: [{"text": "love this movie", "label": "positive review"}, {"text": "I would not recommend this movie to my friends", "label": "negative review"}, {"text": "I did not want to finish the movie", "label": "negative review"}, {"text": "I would watch this movie again with my friends", "label": "positive review"}, {"text": "hate this movie", "label": "negative review"}, {"text": "this movie lacked any originality or depth", "label": "neutral review"}, {"text": "we made it only a quarter way through before we stopped", "label": "negative review"}, {"text": "this movie was okay", "label": "neutral review"}, {"text": "this movie was neither amazing or terrible", "label": "neutral review"}, {"text": "I would not watch this movie again but it was not a waste of time", "label": "neutral review"}, {"text": "I would watch this movie again", "label": "positive review"}, {"text": "i liked this movie", "label": "positive review"}, {"text": "this movie was nothing special", "label": "neutral review"}, {"text": "this is my favourite movie", "label": "positive review"}, {"text": "worst movie of all time", "label": "negative review"}]
+  });
+  console.log(`The confidence levels of the labels are ${response.body.classifications}`);
+  res.json(response.body.classifications)
 })
 
 app.set('port', 8000)
