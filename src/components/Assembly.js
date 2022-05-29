@@ -119,7 +119,10 @@ const Assembly = (props) => {
       })
         .then((res) => res.json())
         .then((data) => {
-          if (data && data != cohereData) setCohereData(data)
+          console.log(data)
+          if (data && data != cohereData) {
+            setCohereData(data)
+          }
         })
     } catch (err) {
       console.error('error', err)
@@ -127,6 +130,7 @@ const Assembly = (props) => {
   }
 
   useEffect(() => {
+    console.log(cohereData)
     if (cohereData) {
       UpdateCohere({ meetingId, participantId, cohere: cohereData })
     }

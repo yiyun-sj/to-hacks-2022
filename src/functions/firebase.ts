@@ -170,8 +170,8 @@ export async function ListenToParticipantCohere(props: {
     doc(db(), 'meetings', meetingId, 'participants', participantId),
     (doc) => {
       if (doc.exists()) {
-        const cohere = doc.data().cohere
-        const currentMood = cohere[-1].prediction
+        const cohere = doc.data()?.cohere
+        const currentMood = cohere[-1]?.prediction
         cb(currentMood)
       }
     }

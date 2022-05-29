@@ -5,8 +5,15 @@ import {
   IRemoteAudioTrack,
 } from 'agora-rtc-sdk-ng'
 import { Pane, Strong, Text } from 'evergreen-ui'
+import { isFunction } from 'lodash'
 import React, { useRef, useEffect, useState } from 'react'
-import { getParticipantById } from '../functions/firebase'
+import {
+  getParticipantById,
+  ListenToParticipantCohere,
+} from '../functions/firebase'
+import happy from '../assets/happy.gif'
+import sad from '../assets/sad.gif'
+import neutral from '../assets/neutral.gif'
 
 export interface VideoPlayerProps {
   uid: string
@@ -19,12 +26,26 @@ const MediaPlayer = (props: VideoPlayerProps) => {
   const { uid, videoTrack, audioTrack, meetingId } = props
 
   const [participant, setParticipant] = useState<any>()
+  const [participantMood, setParticipantMood] = useState<any>()
+  const [emoji, setEmoji] = useState<string>(happy)
 
   const container = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
+    console.log('uid', uid)
     getParticipantById({ meetingId, participantId: uid }).then(setParticipant)
   }, [uid])
+
+  useEffect(() => {
+    if (participant && uid) {
+      const unsubscribe = ListenToParticipantCohere({
+        meetingId,
+        participantId: uid,
+        cb: setParticipantMood,
+      })
+      return () => isFunction(unsubscribe) && unsubscribe()
+    }
+  }, [participant, uid])
 
   useEffect(() => {
     if (!container.current) return
@@ -42,6 +63,17 @@ const MediaPlayer = (props: VideoPlayerProps) => {
     }
   }, [audioTrack])
 
+  useEffect(() => {
+    switch (participantMood) {
+      case 'positive review':
+        return setEmoji(happy)
+      case 'negative review':
+        return setEmoji(sad)
+      case 'neutral review':
+        return setEmoji(neutral)
+    }
+  }, [participantMood])
+
   return (
     <Pane position="relative" elevation={4} marginBottom={16}>
       <Pane ref={container} width={320} height={180} margin={0}></Pane>
@@ -51,6 +83,11 @@ const MediaPlayer = (props: VideoPlayerProps) => {
         height="100%"
         top={0}
         left={0}
+        backgroundColor="white"
+        backgroundImage={`url(${emoji})`}
+        backgroundSize="contain"
+        backgroundRepeat="no-repeat"
+        backgroundPosition="center"
       ></Pane>
       <Pane
         position="absolute"
