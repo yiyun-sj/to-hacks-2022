@@ -2,6 +2,7 @@ import { Pane, Spinner } from 'evergreen-ui'
 import { isFunction } from 'lodash'
 import React, { useContext, useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
+import AgoraCall from '../../components/AgoraCall'
 import { UserContext } from '../../context'
 import {
   getMeetingById,
@@ -69,6 +70,8 @@ export default function Meeting() {
       alignItems="center"
       justifyContent="center"
       id="meet"
-    ></Pane>
+    >
+      {id && <AgoraCall />}
+    </Pane>
   )
 }
