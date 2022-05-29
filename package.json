@@ -58,6 +58,6 @@
   },
   "devDependencies": {
     "@types/lodash": "^4.14.182",
-    "@types/recordrtc": "^5.6.8"
+    "@types/recordrtc": "^5.6.2"
   }
 }

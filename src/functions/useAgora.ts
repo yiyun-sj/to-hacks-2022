@@ -40,12 +40,13 @@ export default function useAgora(client: IAgoraRTCClient | undefined): {
     return [microphoneTrack, cameraTrack]
   }
 
-  async function join(
-    appid: string,
-    channel: string,
-    token?: string,
+  async function join(props: {
+    appid: string
+    channel: string
+    token?: string
     uid?: string | number | null
-  ) {
+  }) {
+    const { appid, channel, token, uid } = props
     if (!client) return
     const [microphoneTrack, cameraTrack] = await createLocalTracks()
 

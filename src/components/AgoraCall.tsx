@@ -1,17 +1,22 @@
 import React, { useEffect, useState } from 'react'
-import AgoraRTC from 'agora-rtc-sdk-ng'
+import AgoraRTC, { IAgoraRTCRemoteUser } from 'agora-rtc-sdk-ng'
 import useAgora from '../functions/useAgora'
 import MediaPlayer from './MediaPlayer'
 import { appId } from '../constants/agoraConstants'
 import { Button, Pane } from 'evergreen-ui'
 import { useNavigate, useParams } from 'react-router-dom'
+import { toString } from 'lodash'
 
 const client = AgoraRTC.createClient({ codec: 'h264', mode: 'rtc' })
 
 // join(appId, channel, token)
 // leave()
 
-export default function AgoraCall() {
+export default function AgoraCall(props: {
+  participantId: string
+  handleRemoteParticipantIds: (participants: string[]) => void
+}) {
+  const { participantId, handleRemoteParticipantIds } = props
   const { id } = useParams()
   const navigate = useNavigate()
 
@@ -25,16 +30,19 @@ export default function AgoraCall() {
   } = useAgora(client)
 
   useEffect(() => {
-    join(appId, id)
+    join({ appid: appId, channel: id, uid: participantId })
   }, [])
 
   useEffect(() => {
-    console.log(remoteUsers)
+    const remoteUserIds = remoteUsers.map((user: IAgoraRTCRemoteUser) =>
+      toString(user.uid)
+    )
+    handleRemoteParticipantIds(remoteUserIds)
   }, [remoteUsers])
 
-  // useEffect(() => {
-  //   console.log(client.connectionState)
-  // }, [client.connectionState])
+  useEffect(() => {
+    console.log('client id', client.uid)
+  }, [client.uid])
 
   const handleLeave = () => {
     leave()
@@ -52,11 +60,15 @@ export default function AgoraCall() {
         width="100%"
       >
         <MediaPlayer
+          meetingId={id || ''}
+          uid={toString(client.uid)}
           videoTrack={localVideoTrack}
           audioTrack={undefined}
         ></MediaPlayer>
         {remoteUsers.map((user) => (
           <MediaPlayer
+            meetingId={id || ''}
+            uid={toString(user.uid)}
             videoTrack={user.videoTrack}
             audioTrack={user.audioTrack}
           ></MediaPlayer>

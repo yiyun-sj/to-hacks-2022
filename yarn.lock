@@ -2498,7 +2498,7 @@
     "@types/scheduler" "*"
     csstype "^3.0.2"
 
-"@types/recordrtc@^5.6.8":
+"@types/recordrtc@^5.6.2":
   version "5.6.8"
   resolved "https://registry.yarnpkg.com/@types/recordrtc/-/recordrtc-5.6.8.tgz#5f3acf151061eb2e34633c8112ca3c6b5ab34a6b"
   integrity sha512-UJQOyTnRXihyKPdUMBur/VxrnXWRCl2AlazwR76mZUc+gnFVfl/MRm5Kz/UtKT7F2l9m4OGwNRyHvy/z765E1w==
@@ -8900,7 +8900,7 @@ readdirp@~3.6.0:
 
 recordrtc@^5.6.2:
   version "5.6.2"
-  resolved "https://registry.npmjs.org/recordrtc/-/recordrtc-5.6.2.tgz"
+  resolved "https://registry.yarnpkg.com/recordrtc/-/recordrtc-5.6.2.tgz#48fc214b35084973ccce82c6251198b5742bc327"
   integrity sha512-1QNKKNtl7+KcwD1lyOgP3ZlbiJ1d0HtXnypUy7yq49xEERxk31PHvE9RCciDrulPCY7WJ+oz0R9hpNxgsIurGQ==
 
 recursive-readdir@^2.2.2:

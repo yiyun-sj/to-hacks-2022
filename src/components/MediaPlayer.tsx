@@ -4,31 +4,46 @@ import {
   ILocalAudioTrack,
   IRemoteAudioTrack,
 } from 'agora-rtc-sdk-ng'
-import { Pane } from 'evergreen-ui'
-import React, { useRef, useEffect } from 'react'
+import { Pane, Strong, Text } from 'evergreen-ui'
+import React, { useRef, useEffect, useState } from 'react'
+import { getParticipantById } from '../functions/firebase'
 
 export interface VideoPlayerProps {
+  uid: string
+  meetingId: string
   videoTrack: ILocalVideoTrack | IRemoteVideoTrack | undefined
   audioTrack: ILocalAudioTrack | IRemoteAudioTrack | undefined
 }
 
 const MediaPlayer = (props: VideoPlayerProps) => {
+  const { uid, videoTrack, audioTrack, meetingId } = props
+
+  const [participant, setParticipant] = useState<any>()
+
   const container = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    getParticipantById({ meetingId, participantId: uid }).then(setParticipant)
+  }, [uid])
+  useEffect(() => {
+    console.log(participant)
+  })
+
   useEffect(() => {
     if (!container.current) return
-    props.videoTrack?.play(container.current)
+    videoTrack?.play(container.current)
     return () => {
-      props.videoTrack?.stop()
+      videoTrack?.stop()
     }
-  }, [container, props.videoTrack])
+  }, [container, videoTrack])
   useEffect(() => {
-    if (props.audioTrack) {
-      props.audioTrack?.play()
+    if (audioTrack) {
+      audioTrack?.play()
     }
     return () => {
-      props.audioTrack?.stop()
+      audioTrack?.stop()
     }
-  }, [props.audioTrack])
+  }, [audioTrack])
 
   return (
     <Pane position="relative" elevation={4} marginBottom={16}>
@@ -40,6 +55,20 @@ const MediaPlayer = (props: VideoPlayerProps) => {
         top={0}
         left={0}
       ></Pane>
+      <Pane
+        position="absolute"
+        bottom={0}
+        background={'linear-gradient(rgba(0, 0, 0, 0), #fff)'}
+        width="100%"
+        height="25%"
+        display="flex"
+        alignItems="end"
+        justifyContent="center"
+      >
+        <Strong size={500} marginBottom={4}>
+          {participant?.username}
+        </Strong>
+      </Pane>
     </Pane>
   )
 }
