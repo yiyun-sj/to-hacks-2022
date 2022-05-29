@@ -25,9 +25,6 @@ const MediaPlayer = (props: VideoPlayerProps) => {
   useEffect(() => {
     getParticipantById({ meetingId, participantId: uid }).then(setParticipant)
   }, [uid])
-  useEffect(() => {
-    console.log(participant)
-  })
 
   useEffect(() => {
     if (!container.current) return

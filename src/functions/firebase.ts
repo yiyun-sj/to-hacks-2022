@@ -8,6 +8,10 @@ import {
   setDoc,
   updateDoc,
   addDoc,
+  query,
+  where,
+  getDocs,
+  Timestamp,
 } from 'firebase/firestore'
 import { Dispatch, SetStateAction } from 'react'
 
@@ -57,11 +61,15 @@ export async function updateUsername(props: {
   })
 }
 
-export async function createMeeting(props: { userId: string }) {
-  const { userId } = props
+export async function createMeeting(props: { userId: string; title: string }) {
+  const { userId, title } = props
+
+  const createdAt = Timestamp.now()
 
   const meetingRef = await addDoc(collection(db(), 'meetings'), {
     host: userId,
+    title,
+    createdAt,
   })
 
   return meetingRef.id
@@ -119,4 +127,18 @@ export async function getParticipantById(props: {
     doc(db(), 'meetings', meetingId, 'participants', participantId || 'none')
   )
   return participantDoc.data()
+}
+
+export async function getMeetingsById(props: { id: string }) {
+  const { id } = props
+  const meetingDocs = query(
+    collection(db(), 'meetings'),
+    where('host', '==', id)
+  )
+  const meetingsSnapshot = await getDocs(meetingDocs)
+  const meetings: any = []
+  meetingsSnapshot.forEach((doc) =>
+    meetings.push({ id: doc.id, ...doc.data() })
+  )
+  return meetings
 }
