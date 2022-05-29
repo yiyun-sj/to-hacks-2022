@@ -17,6 +17,7 @@
     "evergreen-ui": "^6.9.11",
     "express": "^4.18.1",
     "firebase": "^9.8.1",
+    "lodash": "^4.17.21",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-firebase-hooks": "^5.0.3",
@@ -53,6 +54,7 @@
     ]
   },
   "devDependencies": {
-    "@types/recordrtc": "^5.6.8"
+    "@types/recordrtc": "^5.6.8",
+    "@types/lodash": "^4.14.182"
   }
 }
