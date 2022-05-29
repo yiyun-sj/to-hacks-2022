@@ -23,7 +23,7 @@ const run = async (handleCohere) => {
       recorder = null
     }
   } else {
-    const response = await fetch('http://localhost:8000') // get temp session token from server.js (backend)
+    const response = await fetch('https://vidlytics.herokuapp.com:8000') // get temp session token from server.js (backend)
     const data = await response.json()
 
     if (data.error) {
@@ -112,7 +112,7 @@ const Assembly = (props) => {
 
   const handleCohere = (msg) => {
     try {
-      fetch('http://localhost:8000/cohere', {
+      fetch('https://vidlytics.herokuapp.com:8000/cohere', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ sentences: msg.split('.') }),
