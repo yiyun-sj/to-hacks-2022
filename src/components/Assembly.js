@@ -47,7 +47,7 @@ const run = async (handleTranscribe, handleCohere) => {
         }
       }
       console.log(msg)
-      handleTranscribe(msg)
+      handleTranscribe(msg.split('.'))
       handleCohere(msg)
     }
 
@@ -102,7 +102,7 @@ const run = async (handleTranscribe, handleCohere) => {
 }
 
 const Assembly = () => {
-  const [transcription, setTranscription] = useState()
+  const [transcription, setTranscription] = useState([])
   const [data, setData] = useState(null);
 
   const handleCohere = (msg) => {
@@ -110,13 +110,20 @@ const Assembly = () => {
     fetch('http://localhost:8000/cohere', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ sentences: [msg] })
+      body: JSON.stringify({ sentences: msg.split('.') })
     })
       .then((res) => res.json())
       .then((data) => console.log(data))
   };
-  const handleTranscribe = (text) => {
-    setTranscription(text)
+  const handleTranscribe = (sentences) => {
+    for (let i = 0; i < sentences.length - 1; i++) {
+      if (!transcription.includes(sentences[i])) {
+        console.log('works2' + sentences[i])
+        setTranscription([...transcription, sentences[i]])
+      }
+    }
+    setTranscription(sentences)
+    console.log(transcription)
   }
 
   return (
