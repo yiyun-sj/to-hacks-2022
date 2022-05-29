@@ -1,20 +1,14 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import './App.css'
 import { initializeApp } from 'firebase/app'
 import { firebaseConfig } from './constants/firebaseConstants'
-import { getAuth, User } from 'firebase/auth'
+import { getAuth } from 'firebase/auth'
 import { useAuthState } from 'react-firebase-hooks/auth'
-import {
-  BrowserRouter as Router,
-  Navigate,
-  Route,
-  Routes,
-} from 'react-router-dom'
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
 import axios from 'axios'
 import Home from './pages/Client/Home'
 import SignIn from './pages/Host/SignIn'
 import HostHome from './pages/Host/HostHome'
-import { getFirestore } from 'firebase/firestore'
 import { isFunction } from 'lodash'
 import { ListenToOrCreateUserById } from './functions/firebase'
 import { AuthUserContext, UserContext } from './context'

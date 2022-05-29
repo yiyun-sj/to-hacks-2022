@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useContext, useEffect, useState } from 'react'
+import React, { ChangeEvent, useContext, useState } from 'react'
 import {
   Avatar,
   Button,
@@ -6,25 +6,20 @@ import {
   DeleteIcon,
   IconButton,
   Pane,
-  Paragraph,
-  SidebarTab,
   Tab,
   Tablist,
   Text,
   TextInput,
-  useTheme,
 } from 'evergreen-ui'
 import { Divider } from 'antd'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { getAuth, signOut } from 'firebase/auth'
 import { UserContext } from '../../context'
 import { createMeeting, updateUsername } from '../../functions/firebase'
 
 function StartMeeting() {
   const user = useContext(UserContext)
-  const [meetingLink, setMeetingLink] = useState('')
   const navigate = useNavigate()
-  const location = useLocation()
 
   const handleMeetingCreation = async () => {
     const meetingId = await createMeeting({ userId: user?.id })
@@ -85,7 +80,6 @@ function UserProfile() {
 }
 
 function MeetingAnalytics() {
-  const user = useContext(UserContext)
   return (
     <Pane>
       <Text>Meeting Analytics</Text>

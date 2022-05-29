@@ -1,10 +1,9 @@
-import React, { ChangeEvent, ChangeEventHandler, useState } from 'react'
-import { Button, Pane, Text, TextInput, useTheme } from 'evergreen-ui'
+import React, { ChangeEvent, useState } from 'react'
+import { Button, Pane, TextInput } from 'evergreen-ui'
 import { Divider } from 'antd'
 import { Link } from 'react-router-dom'
 
 const Home = () => {
-  const theme = useTheme()
   const [meetingLink, setMeetingLink] = useState('')
 
   return (

@@ -2,7 +2,6 @@ import { getAuth, User } from 'firebase/auth'
 import {
   getFirestore,
   collection,
-  getDocs,
   onSnapshot,
   doc,
   getDoc,
@@ -10,8 +9,7 @@ import {
   updateDoc,
   addDoc,
 } from 'firebase/firestore'
-import { Dispatch, SetStateAction, useContext } from 'react'
-import { AuthUserContext } from '../context'
+import { Dispatch, SetStateAction } from 'react'
 
 const db = () => getFirestore()
 
@@ -63,7 +61,6 @@ export async function createMeeting(props: { userId: string }) {
   const { userId } = props
 
   const meetingRef = await addDoc(collection(db(), 'meetings'), {
-    isLive: true,
     host: userId,
   })
 
@@ -76,45 +73,50 @@ export async function getMeetingById(props: { meetingId: string }) {
   return meetingDoc.data()
 }
 
-export async function ListenToOrCreateParticipant(props: {
-  meetingId: string
-  user?: any
-  participant: string
-  cb: Dispatch<SetStateAction<any>>
-}) {
-  const { meetingId, user, cb, participant } = props
-  if (!meetingId || !cb) return null
-  onSnapshot(
-    doc(db(), 'meetings', meetingId, 'participants', participant),
-    (doc) => {
-      if (doc.exists()) {
-        cb(doc.id)
-      } else {
-        if (user) {
-          createParticipant({ meetingId, user })
-        } else {
-          createParticipant({ meetingId })
-        }
-      }
-    }
-  )
-}
-
 export async function createParticipant(props: {
   meetingId: string
-  user?: any
+  username: string
+  participantId?: string
 }) {
-  const { meetingId, user } = props
+  const { meetingId, username, participantId } = props
 
-  if (user) {
-    await setDoc(doc(db(), 'meetings', meetingId, 'participants', user?.id), {
-      username: user.username,
-      isInCall: true,
-    })
-    return user.id
+  const participantDoc = await getDoc(
+    doc(db(), 'meetings', meetingId, 'participants', participantId || 'none')
+  )
+
+  if (participantDoc.exists()) {
+    return
   }
 
-  await addDoc(collection(db(), 'meetings', meetingId, 'participants'), {
-    isInCall: true,
-  })
+  if (participantId) {
+    await setDoc(
+      doc(db(), 'meetings', meetingId, 'participants', participantId),
+      {
+        username: username,
+        isInCall: true,
+      }
+    )
+    return
+  }
+
+  const participantRef = await addDoc(
+    collection(db(), 'meetings', meetingId, 'participants'),
+    {
+      username: username,
+      isInCall: true,
+    }
+  )
+
+  return participantRef.id
+}
+
+export async function getParticipantById(props: {
+  meetingId: string
+  participantId?: string
+}) {
+  const { meetingId, participantId } = props
+  const participantDoc = await getDoc(
+    doc(db(), 'meetings', meetingId, 'participants', participantId || 'none')
+  )
+  return participantDoc.data()
 }
