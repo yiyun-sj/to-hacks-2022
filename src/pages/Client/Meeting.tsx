@@ -2,7 +2,7 @@ import { Pane, Spinner } from 'evergreen-ui'
 import { isFunction } from 'lodash'
 import React, { useContext, useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { AuthUserContext, UserContext } from '../../context'
+import { UserContext } from '../../context'
 import {
   getMeetingById,
   ListenToOrCreateParticipant,
@@ -10,7 +10,6 @@ import {
 import ErrorPage from '../404Page'
 
 export default function Meeting() {
-  const authUser = useContext(AuthUserContext)
   const user = useContext(UserContext)
   const { id } = useParams()
   const [meeting, setMeeting] = useState<any>()
@@ -36,7 +35,7 @@ export default function Meeting() {
       cb: setParticipant,
     })
     return () => isFunction(unsubscribe) && unsubscribe()
-  }, [meeting])
+  }, [meeting, user, id, participant])
 
   useEffect(() => {
     // console.log(participant)
@@ -69,6 +68,7 @@ export default function Meeting() {
       display="flex"
       alignItems="center"
       justifyContent="center"
+      id="meet"
     ></Pane>
   )
 }

@@ -2,7 +2,6 @@ import { getAuth, User } from 'firebase/auth'
 import {
   getFirestore,
   collection,
-  getDocs,
   onSnapshot,
   doc,
   getDoc,
@@ -10,8 +9,7 @@ import {
   updateDoc,
   addDoc,
 } from 'firebase/firestore'
-import { Dispatch, SetStateAction, useContext } from 'react'
-import { AuthUserContext } from '../context'
+import { Dispatch, SetStateAction } from 'react'
 
 const db = () => getFirestore()
 

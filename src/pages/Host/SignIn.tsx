@@ -1,9 +1,8 @@
 import React from 'react'
-import { Pane, Text, useTheme, Button, LogInIcon } from 'evergreen-ui'
+import { Pane, Button, LogInIcon } from 'evergreen-ui'
 import { getAuth, signInWithPopup, GoogleAuthProvider } from 'firebase/auth'
 
 const SignIn = () => {
-  const theme = useTheme()
   const auth = getAuth()
 
   const signInWithGoogle = () => {
