@@ -2,6 +2,7 @@ import React, { ChangeEvent, useState } from 'react'
 import { Button, Heading, Pane, Text, TextInput } from 'evergreen-ui'
 import { Divider } from 'antd'
 import { Link } from 'react-router-dom'
+import Assembly from '../../components/Assembly'
 
 const Home = () => {
   const [meetingLink, setMeetingLink] = useState('')
@@ -42,6 +43,7 @@ const Home = () => {
         <Button is={Link} to={`/meeting/${meetingLink}`}>
           Join
         </Button>
+        <Assembly />
       </Pane>
       <Pane padding={48}></Pane>
     </Pane>
